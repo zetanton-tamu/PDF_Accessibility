@@ -44,21 +44,12 @@ class PDFAccessibility(Stack):
                                                              directory="javascript_docker",
                                                              platform=ecr_assets.Platform.LINUX_AMD64)
         # VPC with Public and Private Subnets
-        vpc = ec2.Vpc(self, "MyVpc",
-            max_azs=2,
-            nat_gateways=1,
-            subnet_configuration=[
-                ec2.SubnetConfiguration(
-                    subnet_type=ec2.SubnetType.PUBLIC,
-                    name="Public",
-                    cidr_mask=24,
-                ),
-                ec2.SubnetConfiguration(
-                    subnet_type=ec2.SubnetType.PRIVATE_WITH_EGRESS,
-                    name="Private",
-                    cidr_mask=24,
-                ),
-            ]
+        vpc_id = self.node.try_get_context("VpcId")
+        if not vpc_id:
+            raise ValueError("VPC ID must be provided using --context VpcId=<your-vpc-id>")
+        
+        vpc = ec2.Vpc.from_lookup(self, "MyVpc",
+            vpc_id=vpc_id
         )
 
         # ECS Cluster

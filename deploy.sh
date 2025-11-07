@@ -112,9 +112,15 @@ deploy_backend_solution() {
         # Clean up temporary file
         rm -f client_credentials.json
         echo ""
-        
+
+        if [ -z "$VPC_ID" ]; then
+            read -p "   Enter the existing VPC ID to use: " VPC_ID
+            print_success "   VPC ID received! ✅"
+        fi
+        echo ""
+
     elif [ "$DEPLOYMENT_TYPE" == "pdf2html" ]; then
-        print_status "🧠 PDF-to-HTML specific configuration..."
+        print_status "🧠 PDF-to-HTML Remediation specific configuration..."
         echo ""
         
         # Create BDA project (using already verified credentials and region)
@@ -444,7 +450,8 @@ EOF
         ]"
     else
         ENV_VARS="[
-            {\"name\": \"DEPLOYMENT_TYPE\", \"value\": \"$DEPLOYMENT_TYPE\"}
+            {\"name\": \"DEPLOYMENT_TYPE\", \"value\": \"$DEPLOYMENT_TYPE\"},
+            {\"name\": \"VPC_ID\", \"value\": \"$VPC_ID\"}
         ]"
     fi
 
@@ -861,7 +868,7 @@ print_success "✅ AWS credentials verified. Account: $ACCOUNT_ID, Region: $REGI
 echo ""
 
 # GitHub repository URL (hardcoded)
-GITHUB_URL="https://github.com/ASUCICREPO/PDF_Accessibility.git"
+GITHUB_URL="https://github.com/zetanton-tamu/PDF_Accessibility.git"
 print_success "   Repository: $GITHUB_URL ✅"
 echo ""
 

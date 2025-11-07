@@ -18,6 +18,10 @@ phases:
       - aws --version
       - cdk --version
       - |
+        export VPC_ID=$VPC_ID
+        export ACCOUNT_ID=$ACCOUNT_ID
+        export REGION=$REGION
+
         if [ "$DEPLOYMENT_TYPE" = "pdf2html" ]; then
           echo "PDF-to-HTML pre-build steps..."
           echo "Environment variables:"
@@ -41,7 +45,7 @@ phases:
           echo "Bootstrapping CDK environment with retry logic..."
           for i in {1..3}; do
             echo "CDK bootstrap attempt $i/3..."
-            if cdk bootstrap; then
+            if cdk bootstrap --context VpcId=$VPC_ID --context aws-cdk:bootstrap-stack-name=cdk-hnb659fds; then
               echo "CDK bootstrap successful on attempt $i"
               break
             else

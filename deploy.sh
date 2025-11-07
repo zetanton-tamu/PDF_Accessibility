@@ -451,7 +451,9 @@ EOF
     else
         ENV_VARS="[
             {\"name\": \"DEPLOYMENT_TYPE\", \"value\": \"$DEPLOYMENT_TYPE\"},
-            {\"name\": \"VPC_ID\", \"value\": \"$VPC_ID\"}
+            {\"name\": \"VPC_ID\", \"value\": \"$VPC_ID\"},
+            {\"name\": \"ACCOUNT_ID\", \"value\": \"$ACCOUNT_ID\"},
+            {\"name\": \"REGION\", \"value\": \"$REGION\"}
         ]"
     fi
 

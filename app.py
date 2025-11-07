@@ -19,6 +19,7 @@ from aws_cdk import (
 from constructs import Construct
 import platform
 import datetime
+import os
 
 class PDFAccessibility(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
@@ -45,12 +46,18 @@ class PDFAccessibility(Stack):
                                                              platform=ecr_assets.Platform.LINUX_AMD64)
         # VPC with Public and Private Subnets
         vpc_id = self.node.try_get_context("VpcId")
-        if not vpc_id:
-            raise ValueError("VPC ID must be provided using --context VpcId=<your-vpc-id>")
         
-        vpc = ec2.Vpc.from_lookup(self, "MyVpc",
-            vpc_id=vpc_id
-        )
+        # If no VPC ID is provided, try to use the default VPC
+        # This allows bootstrap to work without requiring VPC ID
+        if vpc_id:
+            vpc = ec2.Vpc.from_lookup(self, "MyVpc",
+                vpc_id=vpc_id
+            )
+        else:
+            # Fallback to default VPC for bootstrap compatibility
+            vpc = ec2.Vpc.from_lookup(self, "MyVpc",
+                is_default=True
+            )
 
         # ECS Cluster
         cluster = ecs.Cluster(self, "FargateCluster", vpc=vpc)
@@ -450,5 +457,11 @@ class PDFAccessibility(Stack):
         )
 
 app = cdk.App()
-PDFAccessibility(app, "PDFAccessibility")
+
+env = cdk.Environment(
+    account=os.environ.get("ACCOUNT_ID"),
+    region=os.environ.get("REGION")
+)
+
+PDFAccessibility(app, "PDFAccessibility", env=env)
 app.synth()
